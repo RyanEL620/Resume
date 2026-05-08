@@ -1,45 +1,324 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>SQL Analyst & AI Agent</title>
-    <style>
-        body {
-            background-color: #0f172a; /* Professional Dark Mode */
-            color: #f1f5f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-        p { color: #94a3b8; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ryan Loper | SQL Analyst & AI Engineering</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --surface: #111820;
+      --border: #1e2d3d;
+      --accent: #00e5ff;
+      --accent2: #7b61ff;
+      --text: #d4e8f7;
+      --muted: #4e6a82;
+      --highlight: #e0f7ff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grid noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,229,255,0.03) 39px, rgba(0,229,255,0.03) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,229,255,0.03) 39px, rgba(0,229,255,0.03) 40px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Ambient glow blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.13;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 {
+      width: 600px; height: 600px;
+      background: var(--accent);
+      top: -200px; left: -200px;
+      animation: drift1 18s ease-in-out infinite alternate;
+    }
+    .blob-2 {
+      width: 500px; height: 500px;
+      background: var(--accent2);
+      bottom: -150px; right: -150px;
+      animation: drift2 22s ease-in-out infinite alternate;
+    }
+    @keyframes drift1 { to { transform: translate(80px, 60px); } }
+    @keyframes drift2 { to { transform: translate(-60px, -80px); } }
+
+    /* ─── HEADER ─────────────────────────── */
+    header {
+      position: relative;
+      z-index: 1;
+      padding: 56px 48px 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.8;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 400;
+      color: var(--highlight);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+
+    h1 .pipe {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .tagline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+
+    .tag {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--muted);
+      position: relative;
+      overflow: hidden;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .tag::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+      opacity: 0.07;
+    }
+    .tag:hover { color: var(--accent); border-color: var(--accent); }
+    .tag:hover::before { transform: scaleX(1); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .status-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ─── HERO / CHAT SECTION ───────────────────── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px 64px;
+    }
+
+    .hero-label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+      animation: fadeUp 0.7s 0.35s ease both;
+    }
+
+    /* Glowing border frame around the chat */
+    .webchat-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 780px;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+
+    /* Corner accent marks */
+    .webchat-wrapper::before,
+    .webchat-wrapper::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--accent);
+      border-style: solid;
+      opacity: 0.6;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .webchat-wrapper::before {
+      top: -2px; left: -2px;
+      border-width: 2px 0 0 2px;
+    }
+    .webchat-wrapper::after {
+      bottom: -2px; right: -2px;
+      border-width: 0 2px 2px 0;
+    }
+
+    /* Extra corners via inner pseudo */
+    .webchat-inner {
+      position: relative;
+    }
+    .webchat-inner::before,
+    .webchat-inner::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--accent);
+      border-style: solid;
+      opacity: 0.6;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .webchat-inner::before {
+      top: -2px; right: -2px;
+      border-width: 2px 2px 0 0;
+    }
+    .webchat-inner::after {
+      bottom: -2px; left: -2px;
+      border-width: 0 0 2px 2px;
+    }
+
+    #webchat-frame {
+      width: 100%;
+      height: 600px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Scanning line animation over the chat */
+    #webchat-frame::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.3;
+      animation: scan 4s linear infinite;
+      pointer-events: none;
+      z-index: 10;
+    }
+    @keyframes scan {
+      0%   { top: 0%; }
+      100% { top: 100%; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── RESPONSIVE ─────────────────────── */
+    @media (max-width: 640px) {
+      header { padding: 32px 24px; }
+      h1 { font-size: 2rem; }
+      #webchat-frame { height: 480px; }
+    }
+  </style>
 </head>
 <body>
-    <h1>|Ryan Loper|</h1>
-    <p>Professional SQL Analyst | AI Engineering | Data Integrity Specialist</p>
-         <p>Professional SQL Analyst | AI Engineering | Data Integrity Specialist</p>
 
- 
-    
-    <!-- YOUR BOTPRESS SCRIPTS -->
-<div id="webchat-frame" style="width: 100%; max-width: 800px; height: 600px; margin: 0 auto;"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
 
-<script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
-<script defer>
-  window.botpressWebChat.init({
-      "container": "#webchat-frame", 
-      "hideWidget": false,           
-      "configUrl": "https://files.bpcontent.cloud/2026/05/08/00/20260508002446-0TKCEHU8.json"
-  });
-    
-</script>
+  <header>
+    <div class="header-left">
+      <span class="eyebrow">Portfolio</span>
+      <h1><span class="pipe">|</span>Ryan Loper<span class="pipe">|</span></h1>
+      <div class="tagline">
+        <span class="tag">Professional SQL Analyst</span>
+        <span class="tag">AI Engineering</span>
+        <span class="tag">Data Integrity Specialist</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-dot"></div>
+      <span class="status-label">Available for Hire</span>
+    </div>
+  </header>
 
-   
+  <section class="hero">
+    <div class="hero-label">// Chat with my AI Assistant</div>
+    <div class="webchat-wrapper">
+      <div class="webchat-inner">
+        <div id="webchat-frame"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Botpress Webchat — mounted into #webchat-frame -->
+  <script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      if (window.botpress && typeof window.botpress.init === 'function') {
+        window.botpress.init({
+          container: document.getElementById('webchat-frame')
+        });
+      }
+    });
+  </script>
+  <script src="https://files.bpcontent.cloud/2026/05/08/00/20260508002446-0O41LX37.js"></script>
+
 </body>
 </html>
