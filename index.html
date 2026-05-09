@@ -382,6 +382,22 @@
       }
     });
   </script>
+  window.addEventListener('load', function () {
+  setTimeout(function () {
+    var container = document.querySelector('.bpw-msg-conversation-container')
+                 || document.querySelector('[class*="bp-message-list"]');
+    if (container) {
+      // Replace the native scroll with a gentler version
+      var orig = container.scrollTop;
+      Object.defineProperty(container, 'scrollTop', {
+        set: function(val) {
+          this.scrollTo({ top: val, behavior: 'smooth' });
+        },
+        get: function() { return orig; }
+      });
+    }
+  }, 3000); // wait for Botpress to finish mounting
+});
   <script src="https://files.bpcontent.cloud/2026/05/08/00/20260508002446-0O41LX37.js"></script>
   <script>
     function copyEmail(btn) {
