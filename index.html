@@ -28,7 +28,6 @@
       overflow-x: hidden;
     }
 
-    /* Grid noise texture overlay */
     body::before {
       content: '';
       position: fixed;
@@ -40,7 +39,6 @@
       z-index: 0;
     }
 
-    /* Ambient glow blobs */
     .blob {
       position: fixed;
       border-radius: 50%;
@@ -64,7 +62,6 @@
     @keyframes drift1 { to { transform: translate(80px, 60px); } }
     @keyframes drift2 { to { transform: translate(-60px, -80px); } }
 
-    /* ─── HEADER ─────────────────────────── */
     header {
       position: relative;
       z-index: 1;
@@ -166,7 +163,6 @@
       text-transform: uppercase;
     }
 
-    /* ─── HERO / CHAT SECTION ───────────────────── */
     .hero {
       position: relative;
       z-index: 1;
@@ -185,7 +181,6 @@
       animation: fadeUp 0.7s 0.35s ease both;
     }
 
-    /* Glowing border frame around the chat */
     .webchat-wrapper {
       position: relative;
       width: 100%;
@@ -193,7 +188,6 @@
       animation: fadeUp 0.8s 0.5s ease both;
     }
 
-    /* Corner accent marks */
     .webchat-wrapper::before,
     .webchat-wrapper::after {
       content: '';
@@ -214,7 +208,6 @@
       border-width: 0 2px 2px 0;
     }
 
-    /* Extra corners via inner pseudo */
     .webchat-inner {
       position: relative;
     }
@@ -247,7 +240,6 @@
       position: relative;
     }
 
-    /* Scanning line animation over the chat */
     #webchat-frame::after {
       content: '';
       position: absolute;
@@ -269,7 +261,6 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ─── COPY BUTTON ────────────────────── */
     .copy-btn {
       display: inline-flex;
       align-items: center;
@@ -299,7 +290,6 @@
     }
     .copy-btn svg { flex-shrink: 0; }
 
-    /* ─── RESUME LINK ────────────────────── */
     .resume-link {
       display: inline-flex;
       align-items: center;
@@ -323,7 +313,6 @@
     }
     .resume-link svg { flex-shrink: 0; }
 
-    /* ─── RESPONSIVE ─────────────────────── */
     @media (max-width: 640px) {
       header { padding: 32px 24px; }
       h1 { font-size: 2rem; }
@@ -382,31 +371,34 @@
       }
     });
   </script>
-  window.addEventListener('load', function () {
-  setTimeout(function () {
-    var container = document.querySelector('.bpw-msg-conversation-container')
-                 || document.querySelector('[class*="bp-message-list"]');
-    if (container) {
-      // Replace the native scroll with a gentler version
-      var orig = container.scrollTop;
-      Object.defineProperty(container, 'scrollTop', {
-        set: function(val) {
-          this.scrollTo({ top: val, behavior: 'smooth' });
-        },
-        get: function() { return orig; }
-      });
-    }
-  }, 3000); // wait for Botpress to finish mounting
-});
   <script src="https://files.bpcontent.cloud/2026/05/08/00/20260508002446-0O41LX37.js"></script>
+
   <script>
+    // Smooth scroll override — reduces jarring jump-to-bottom on long bot replies
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        var container = document.querySelector('.bpw-msg-conversation-container')
+                     || document.querySelector('[class*="bp-message-list"]');
+        if (container) {
+          var orig = container.scrollTop;
+          Object.defineProperty(container, 'scrollTop', {
+            set: function (val) {
+              this.scrollTo({ top: val, behavior: 'smooth' });
+            },
+            get: function () { return orig; }
+          });
+        }
+      }, 3000);
+    });
+
+    // Copy email to clipboard
     function copyEmail(btn) {
       navigator.clipboard.writeText('RyanELoper@Outlook.com').then(function () {
         btn.classList.add('copied');
         btn.querySelector('.copy-label').textContent = 'copied!';
         setTimeout(function () {
           btn.classList.remove('copied');
-          btn.querySelector('.copy-label').textContent = 'copy';
+          btn.querySelector('.copy-label').textContent = '«copy';
         }, 2000);
       });
     }
